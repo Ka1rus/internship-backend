@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -17,6 +18,11 @@ public class TipoDespesaController {
 
     @Autowired
     private TipoDespesaService tipoDespesaService;
+
+    @GetMapping
+    public List<TipoDespesa> findAll() {
+        return tipoDespesaService.findAll();
+    }
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
@@ -40,6 +46,17 @@ public class TipoDespesaController {
                 }).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Id não encontrado"));
     }
 
+    @PutMapping("/{id}")
+    public TipoDespesa update(@PathVariable Integer id, @RequestBody TipoDespesa tipoDespesa) {
+         return tipoDespesaService.findById(id)
+                .map(tipoDespesa1 -> {
+                    tipoDespesa1.setIdTipoDespesa(id);
+                    tipoDespesa1.setObsTipoDespesa(tipoDespesa.getObsTipoDespesa());
+                    tipoDespesa1.setNomeTipoDespesa(tipoDespesa.getNomeTipoDespesa());
+                    return tipoDespesaService.create(tipoDespesa);
+                }).get();
+
+    }
 
 
 }
